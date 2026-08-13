@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Universo Dual · Clever Joel Mamani Ari</title>
+    <!-- FUENTES Y LIBRERÍAS GLOBALES -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <!-- TU CSS EXTERNO -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="theme-sober">
+
+    <!-- ============================================
+    CANVAS (Fondo de partículas - Modo Loco)
+    ============================================ -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- ============================================
+    OBJETOS FLOTANTES (Guitarra, Mic, Cámara)
+    ============================================ -->
+    <div class="floating-objects">
+        <div class="float-item" id="guitar"><i class="fas fa-guitar"></i></div>
+        <div class="float-item" id="mic"><i class="fas fa-microphone-alt"></i></div>
+        <div class="float-item" id="camera"><i class="fas fa-camera-retro"></i></div>
+    </div>
+
+    <!-- ============================================
+    NAVEGACIÓN (Fija)
+    ============================================ -->
+    <nav>
+        <div class="container">
+            <div class="logo">_Joel<span>Ari_</span> </div>
+            <ul class="nav-links">
+                <li><a class="active" data-page="inicio">Inicio</a></li>
+                <li><a data-page="profesion">Profesión</a></li>
+                <li><a data-page="fotografia">Fotografía</a></li>
+                <li><a data-page="musica">Música</a></li>
+                <li><a data-page="proyectos">Proyectos</a></li>
+                <li><a data-page="personal">Personal</a></li>
+            </ul>
+            <button class="theme-toggle" id="themeToggle">🌪️ Modo good</button>
+        </div>
+    </nav>
+
+    <!-- ============================================
+    CONTENEDOR PRINCIPAL (Aquí se inyectan las páginas)
+    ============================================ -->
+    <main id="app"></main>
+
+    <!-- ============================================
+    FOOTER / CONTACTO (Global)
+    ============================================ -->
+    <footer>
+        <div class="container" style="text-align:center;">
+            <h3 class="footer-title">¡Conectemos! 🚀</h3>
+            <p class="footer-subtitle">Haz clic en cualquiera de las redes para comunicarte o seguir mi trabajo:</p>
+            <div class="social-footer">
+                <a href="https://wa.me/?text=Hola%20Joel,%20vi%20tu%20portafolio%20web" target="_blank" rel="noopener noreferrer" class="social-btn social-whatsapp" title="Escribirme por WhatsApp">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+                <a href="https://t.me/" target="_blank" rel="noopener noreferrer" class="social-btn social-telegram" title="Contactar por Telegram">
+                    <i class="fab fa-telegram-plane"></i> Telegram
+                </a>
+                <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer" class="social-btn social-tiktok" title="Sígueme en TikTok">
+                    <i class="fab fa-tiktok"></i> TikTok
+                </a>
+                <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" class="social-btn social-facebook" title="Perfil de Facebook">
+                    <i class="fab fa-facebook"></i> Facebook
+                </a>
+                <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" class="social-btn social-instagram" title="Sígueme en Instagram">
+                    <i class="fab fa-instagram"></i> Instagram
+                </a>
+                <a href="https://github.com/" target="_blank" rel="noopener noreferrer" class="social-btn social-github" title="Repositorios en GitHub">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+                <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" class="social-btn social-linkedin" title="Perfil Profesional LinkedIn">
+                    <i class="fab fa-linkedin"></i> LinkedIn
+                </a>
+            </div>
+            <p style="color: var(--text-secondary); margin-top: 2rem; font-size: 0.9rem;">
+                Hecho con ❤️ y <i class="fas fa-code"></i> por Clever Joel Mamani Ari.
+            </p>
+        </div>
+    </footer>
+
+    <!-- ============================================
+    SCRIPTS
+    ============================================ -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <!-- TU JS EXTERNO -->
+    <script src="js/main.js"></script>
+</body>
+</html>

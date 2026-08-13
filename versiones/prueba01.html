@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Universo Dual · [Tu Nombre]</title>
+    <!-- FUENTES -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <!-- SWIPER -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <style>
+        /* ======================================================
+                   VARIABLES GLOBALES Y RESET
+                   ====================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background 0.8s ease, color 0.8s ease;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ----- TEMA SOBRIO (Default) ----- */
+        body.theme-sober {
+            --bg-body: #f4f1ea;
+            /* Base con textura (se aplica aparte) */
+            --bg-card: #ffffff;
+            --text-primary: #1e2b26;
+            --text-secondary: #4a5b55;
+            --accent-color: #b87333;
+            /* Nuez */
+            --accent-hover: #9e6429;
+            --green-soft: #2c4c3b;
+            /* Verde inglés */
+            --green-petrol: #3a5f4e;
+            --border-color: #d6d2c8;
+            --shadow: 0 8px 30px rgba(44, 76, 59, 0.08);
+            --nav-bg: rgba(244, 241, 234, 0.85);
+            --hero-font: 'Playfair Display', serif;
+        }
+
+        /* ----- TEMA LOCO (Animado y Futurista) ----- */
+        body.theme-loco {
+            --bg-body: #0b0a0f;
+            --bg-card: rgba(20, 15, 35, 0.8);
+            --text-primary: #f0eaff;
+            --text-secondary: #b8adcf;
+            --accent-color: #ff00c8;
+            /* Rosa neón */
+            --accent-hover: #ff66d6;
+            --green-soft: #00f0ff;
+            /* Cian neón */
+            --green-petrol: #7a2be0;
+            /* Morado */
+            --border-color: #3a2b5c;
+            --shadow: 0 8px 30px rgba(255, 0, 200, 0.2);
+            --nav-bg: rgba(11, 10, 15, 0.9);
+            --hero-font: 'Inter', sans-serif;
+        }
+
+        /* ---- TEXTURA FONDO SOBRIO ---- */
+        body.theme-sober {
+            background-color: var(--bg-body);
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+        }
+        /* ---- FONDO LOCO (Partículas y degradado) ---- */
+        body.theme-loco {
+            background: #0b0a0f;
+        }
+        /* El canvas de partículas se añade con JS, pero el fondo base es oscuro */
+
+        /* ----- ESTILOS GENERALES ----- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* ----- NAVEGACIÓN (Fija) ----- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 999;
+            padding: 0.8rem 0;
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color);
+            background: var(--nav-bg);
+            transition: background 0.6s, border-color 0.6s;
+        }
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .logo {
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: -0.5px;
+            color: var(--text-primary);
+        }
+        .logo span {
+            color: var(--accent-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.8rem;
+            list-style: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            flex-wrap: wrap;
+        }
+        .nav-links a {
+            color: var(--text-secondary);
+            transition: 0.3s;
+            cursor: pointer;
+            padding: 0.3rem 0;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--text-primary);
+            border-bottom-color: var(--accent-color);
+        }
+
+        /* --- BOTÓN MODO LOCO (El gran toggle) --- */
+        .theme-toggle {
+            background: transparent;
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.4s;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-card);
+            box-shadow: 0 0 15px rgba(255, 0, 200, 0.1);
+        }
+        .theme-toggle:hover {
+            background: var(--accent-color);
+            color: #fff;
+            box-shadow: 0 0 30px var(--accent-color);
+            transform: scale(1.05);
+        }
+        body.theme-loco .theme-toggle {
+            border-color: #00f0ff;
+            color: #00f0ff;
+            box-shadow: 0 0 25px #00f0ff55;
+        }
+        body.theme-loco .theme-toggle:hover {
+            background: #00f0ff;
+            color: #0b0a0f;
+        }
+
+        /* ----- PÁGINAS (SPA) ----- */
+        .page {
+            display: none;
+            padding-top: 90px;
+            min-height: 80vh;
+            animation: fadePage 0.5s ease;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes fadePage {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ----- HERO (Inicio) ----- */
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 4rem;
+            align-items: center;
+            min-height: 70vh;
+        }
+        .hero-img {
+            width: 100%;
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: 0.6s;
+            aspect-ratio: 1/1.2;
+            object-fit: cover;
+            background: var(--bg-card);
+        }
+        .hero-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .hero-text h1 {
+            font-family: var(--hero-font);
+            font-size: 3.8rem;
+            line-height: 1.1;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            transition: 0.6s;
+        }
+        .hero-text h1 .highlight {
+            color: var(--accent-color);
+            font-style: italic;
+        }
+        .hero-text .sub {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-weight: 300;
+        }
+        .hero-text .quote {
+            font-family: var(--hero-font);
+            font-style: italic;
+            font-size: 1.4rem;
+            color: var(--accent-color);
+            border-left: 4px solid var(--accent-color);
+            padding-left: 1.5rem;
+            margin-top: 2rem;
+            opacity: 0.9;
+            transition: 0.6s;
+        }
+        .badge-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-top: 1.5rem;
+        }
+        .badge {
+            background: var(--bg-card);
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            transition: 0.3s;
+        }
+        .badge:hover {
+            border-color: var(--accent-color);
+            color: var(--text-primary);
+        }
+
+        /* ----- SECCIONES GENERALES ----- */
+        .section-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-family: var(--hero-font);
+        }
+        .section-sub {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+        }
+        .section-title i {
+            color: var(--accent-color);
+            margin-right: 0.5rem;
+        }
+
+        /* ----- TARJETAS (Profesión, Personal) ----- */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        .card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            transition: transform 0.3s, box-shadow 0.3s, border 0.3s;
+            color: var(--text-primary);
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            border-color: var(--accent-color);
+        }
+        .card i {
+            font-size: 2.8rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+        .card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+        .card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* ----- CARRUSEL FOTOS ----- */
+        .swiper {
+            width: 100%;
+            height: 450px;
+            border-radius: 32px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+        .swiper-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* ----- PROYECTO DESTACADO (Terminal) ----- */
+        .project-highlight {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+            background: var(--bg-card);
+            border-radius: 32px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            align-items: center;
+        }
+        .project-highlight img {
+            width: 100%;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+        .project-highlight h3 {
+            font-size: 2rem;
+            color: var(--text-primary);
+        }
+        .project-highlight p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* ----- MUSICA / VIDEO (Placeholder) ----- */
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .media-item {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 1.8rem;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+        .media-item i {
+            font-size: 3rem;
+            color: var(--accent-color);
+        }
+        .media-item audio,
+        .media-item video {
+            width: 100%;
+            margin-top: 1rem;
+            border-radius: 12px;
+        }
+
+        /* ----- BOTONES SOCIALES (Contacto) ----- */
+        .social-footer {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        .social-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.8rem 1.8rem;
+            border-radius: 60px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            transition: 0.3s;
+            box-shadow: var(--shadow);
+            font-size: 1rem;
+        }
+        .social-btn:hover {
+            transform: translateY(-4px) scale(1.02);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ======================================================
+                   ESTILOS EXCLUSIVOS DEL MODO LOCO (Se activan con body.theme-loco)
+                   ====================================================== */
+        body.theme-loco .card {
+            backdrop-filter: blur(10px);
+            border: 1px solid #7a2be0;
+            box-shadow: 0 0 30px rgba(122, 43, 224, 0.3);
+        }
+        body.theme-loco .card:hover {
+            border-color: #00f0ff;
+            box-shadow: 0 0 60px rgba(0, 240, 255, 0.3);
+            transform: translateY(-8px) scale(1.02);
+        }
+        body.theme-loco .project-highlight {
+            border: 1px solid #ff00c8;
+            box-shadow: 0 0 40px rgba(255, 0, 200, 0.2);
+        }
+        body.theme-loco .swiper {
+            border: 2px solid #00f0ff;
+            box-shadow: 0 0 50px rgba(0, 240, 255, 0.2);
+        }
+        body.theme-loco .hero-img {
+            border: 2px solid #ff00c8;
+            animation: pulse-border 2s infinite alternate;
+        }
+        @keyframes pulse-border {
+            0% {
+                box-shadow: 0 0 20px #ff00c888;
+            }
+            100% {
+                box-shadow: 0 0 60px #00f0ff88;
+            }
+        }
+        body.theme-loco .hero-text .quote {
+            border-left-color: #ff00c8;
+            color: #00f0ff;
+            text-shadow: 0 0 20px #00f0ff55;
+        }
+        body.theme-loco .section-title i {
+            color: #ff00c8;
+            text-shadow: 0 0 30px #ff00c888;
+        }
+
+        /* ---- OBJETOS FLOTANTES (Solo visibles en modo loco) ---- */
+        .floating-objects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        body.theme-sober .floating-objects {
+            display: none;
+        }
+        body.theme-loco .floating-objects {
+            display: block;
+        }
+
+        .float-item {
+            position: absolute;
+            font-size: 4rem;
+            opacity: 0.6;
+            filter: drop-shadow(0 0 20px rgba(255, 0, 200, 0.6));
+            transition: transform 0.1s ease-out;
+            will-change: transform;
+            color: #ff00c8;
+            pointer-events: auto;
+            cursor: crosshair;
+            animation: floatAround 6s infinite alternate ease-in-out;
+        }
+        .float-item:nth-child(1) {
+            top: 15%;
+            left: 5%;
+            animation-delay: 0s;
+            color: #00f0ff;
+        }
+        .float-item:nth-child(2) {
+            bottom: 20%;
+            right: 3%;
+            animation-delay: 2s;
+            color: #ff00c8;
+        }
+        .float-item:nth-child(3) {
+            top: 50%;
+            left: 85%;
+            animation-delay: 4s;
+            color: #7a2be0;
+            font-size: 5rem;
+        }
+        /* Íconos específicos para guitarra, mic, cámara (usamos FontAwesome) */
+        .float-item i {
+            display: block;
+            transition: 0.2s;
+        }
+        .float-item:hover i {
+            transform: scale(1.5) rotate(20deg);
+            filter: drop-shadow(0 0 40px #fff);
+            color: #fff;
+        }
+
+        @keyframes floatAround {
+            0% {
+                transform: translate(0px, 0px) rotate(0deg);
+            }
+            33% {
+                transform: translate(30px, -40px) rotate(10deg);
+            }
+            66% {
+                transform: translate(-20px, 20px) rotate(-5deg);
+            }
+            100% {
+                transform: translate(10px, -10px) rotate(5deg);
+            }
+        }
+
+        /* Override para que el contenido principal esté por encima de los objetos flotantes */
+        .page {
+            position: relative;
+            z-index: 2;
+        }
+        nav {
+            z-index: 1000;
+        }
+
+        /* Fondo de partículas (Canvas) */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        body.theme-sober #particles-canvas {
+            display: none;
+        }
+        body.theme-loco #particles-canvas {
+            display: block;
+        }
+
+        /* ----- RESPONSIVE ----- */
+        @media (max-width: 992px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .hero-img {
+                max-width: 400px;
+                margin: 0 auto;
+            }
+            .hero-text .quote {
+                border-left: none;
+                padding-left: 0;
+                border-top: 4px solid var(--accent-color);
+                padding-top: 1rem;
+            }
+            .project-highlight {
+                grid-template-columns: 1fr;
+            }
+            .nav-links {
+                gap: 0.8rem;
+                font-size: 0.8rem;
+            }
+        }
+        @media (max-width: 600px) {
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+            .container {
+                padding: 0 1rem;
+            }
+            .swiper {
+                height: 250px;
+            }
+            .float-item {
+                font-size: 2.5rem !important;
+            }
+        }
+    </style>
+</head>
+<body class="theme-sober">
+
+    <!-- ============================================================
+    CANVAS DE PARTÍCULAS (MODO LOCO)
+    ============================================================ -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- ============================================================
+    OBJETOS FLOTANTES (GUITARRA, MIC, CÁMARA - MODO LOCO)
+    ============================================================ -->
+    <div class="floating-objects">
+        <div class="float-item" id="guitar"><i class="fas fa-guitar"></i></div>
+        <div class="float-item" id="mic"><i class="fas fa-microphone-alt"></i></div>
+        <div class="float-item" id="camera"><i class="fas fa-camera-retro"></i></div>
+    </div>
+
+    <!-- ============================================================
+    NAVEGACIÓN
+    ============================================================ -->
+    <nav>
+        <div class="container">
+            <div class="logo">[Tu<span>Nombre</span>]</div>
+            <ul class="nav-links">
+                <li><a class="active" data-page="inicio">Inicio</a></li>
+                <li><a data-page="profesion">Profesión</a></li>
+                <li><a data-page="fotografia">Fotografía</a></li>
+                <li><a data-page="musica">Música</a></li>
+                <li><a data-page="proyectos">Proyectos</a></li>
+                <li><a data-page="personal">Personal</a></li>
+            </ul>
+            <button class="theme-toggle" id="themeToggle">🌪️ Modo Loco</button>
+        </div>
+    </nav>
+
+    <!-- ============================================================
+    PÁGINA: INICIO
+    ============================================================ -->
+    <section class="page active" id="page-inicio">
+        <div class="container hero-grid">
+            <div class="hero-img">
+                <!-- PON TU FOTO AQUÍ: img/yo.jpg -->
+                <img src="https://picsum.photos/id/1005/800/1000" alt="Mi foto">
+            </div>
+            <div class="hero-text">
+                <h1>Hola, soy <span class="highlight">[Tu Nombre]</span></h1>
+                <p class="sub">Ingeniero Estadístico · Informático · Fotógrafo · Músico</p>
+                <div class="badge-container">
+                    <span class="badge"><i class="fas fa-chart-line"></i> Data Science</span>
+                    <span class="badge"><i class="fas fa-code"></i> Web Apps</span>
+                    <span class="badge"><i class="fas fa-camera"></i> Fotografía</span>
+                    <span class="badge"><i class="fas fa-guitar"></i> Guitarra</span>
+                    <span class="badge"><i class="fas fa-swimmer"></i> Natación</span>
+                </div>
+                <div class="quote">
+                    “Tengo la mente alegre y divertida de dioscuros, pero mi corazón se rige por la ley inquebrantable de la lealtad mutua.”
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    PÁGINA: PROFESIÓN
+    ============================================================ -->
+    <section class="page" id="page-profesion">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-cogs"></i> Mi Caja de Herramientas</h2>
+            <p class="section-sub">Lo que uso para resolver problemas reales, sin postureo.</p>
+            <div class="card-grid">
+                <div class="card">
+                    <i class="fas fa-chart-pie"></i>
+                    <h3>Estadística & ML</h3>
+                    <p>Python, R y SQL. Modelos de Poisson, regresiones y dashboards interactivos para tomar decisiones basadas en datos.</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-laptop-code"></i>
+                    <h3>Ingeniería Web</h3>
+                    <p>React, Node.js y PHP. Construyo aplicaciones funcionales, APIs robustas y administro infraestructura en la nube.</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-database"></i>
+                    <h3>Datos & Cloud</h3>
+                    <p>Gestión de bases de datos SQL/NoSQL, optimización de consultas y despliegues en entornos Docker/Linux.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    PÁGINA: FOTOGRAFÍA
+    ============================================================ -->
+    <section class="page" id="page-fotografia">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-camera-retro"></i> Mi Ojo Fotográfico</h2>
+            <p class="section-sub">Paisajes, momentos y texturas que he capturado durante mis viajes.</p>
+            <div class="swiper mySwiper">
+                <div class="swiper-wrapper">
+                    <!-- CAMBIA ESTAS IMÁGENES POR TUS FOTOS (ej: img/foto1.jpg) -->
+                    <div class="swiper-slide"><img src="https://picsum.photos/id/1015/800/600" alt="Paisaje 1"></div>
+                    <div class="swiper-slide"><img src="https://picsum.photos/id/1018/800/600" alt="Paisaje 2"></div>
+                    <div class="swiper-slide"><img src="https://picsum.photos/id/1039/800/600" alt="Paisaje 3"></div>
+                    <div class="swiper-slide"><img src="https://picsum.photos/id/1044/800/600" alt="Paisaje 4"></div>
+                    <div class="swiper-slide"><img src="https://picsum.photos/id/1055/800/600" alt="Paisaje 5"></div>
+                    <div class="swiper-slide"><img src="https://picsum.photos/id/1067/800/600" alt="Paisaje 6"></div>
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    PÁGINA: MÚSICA
+    ============================================================ -->
+    <section class="page" id="page-musica">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-music"></i> Música & Sonido</h2>
+            <p class="section-sub">Guitarra, voz y la búsqueda de mi propio sonido. Pronto más contenido en YouTube.</p>
+            <div class="media-grid">
+                <div class="media-item">
+                    <i class="fas fa-guitar"></i>
+                    <h3>Acústico & Covers</h3>
+                    <p><small>Mis primeras grabaciones (en proceso).</small></p>
+                    <audio controls src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+                </div>
+                <div class="media-item">
+                    <i class="fas fa-video"></i>
+                    <h3>Videoclips</h3>
+                    <p><small>Próximamente: sesiones en vivo.</small></p>
+                    <video controls src="https://www.w3schools.com/html/mov_bbb.mp4"></video>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    PÁGINA: PROYECTOS
+    ============================================================ -->
+    <section class="page" id="page-proyectos">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-rocket"></i> Proyectos Destacados</h2>
+            <p class="section-sub">Cosas que construí y que siguen en pie.</p>
+
+            <div class="project-highlight">
+                <div>
+                    <h3><i class="fas fa-bus" style="color:var(--accent-color);"></i> Terminal Terrestre de Puno</h3>
+                    <p>Administro y mantengo la plataforma oficial. Actualización de horarios, integración de rutas y gestión de picos de tráfico. Un reto diario que combina lógica, servidores y mucha paciencia.</p>
+                    <span class="badge" style="margin-top:1rem; display:inline-block;">PHP · MySQL · Hosting</span>
+                </div>
+                <div>
+                    <!-- PON TU CAPTURA: img/imgterminal01.png -->
+                    <img src="https://picsum.photos/id/1043/800/500" alt="Terminal Puno">
+                </div>
+            </div>
+
+            <div class="card-grid" style="margin-top:3rem;">
+                <div class="card">
+                    <i class="fas fa-trophy"></i>
+                    <h3>Dashboards Estadísticos</h3>
+                    <p>Desarrollé paneles para monitoreo de tráfico vehicular usando modelos predictivos que optimizan rutas en tiempo real.</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h3>Infraestructura Cloud</h3>
+                    <p>Migración de sistemas legacy a contenedores Docker, reduciendo tiempos de inactividad y mejorando la escalabilidad.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    PÁGINA: PERSONAL
+    ============================================================ -->
+    <section class="page" id="page-personal">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-heart"></i> Mi Lado Humano</h2>
+            <p class="section-sub">Lo que me mueve fuera del teclado y la cámara.</p>
+            <div class="card-grid">
+                <div class="card">
+                    <i class="fas fa-hands-praying"></i>
+                    <h3>Catequesis</h3>
+                    <p>Acompañar a jóvenes en su fe me enseñó a escuchar, a tener paciencia y a comunicar con empatía. Valores que llevo a todos los equipos.</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-swimmer"></i>
+                    <h3>Natación</h3>
+                    <p>Mi meditación activa. La resistencia mental y el control de la respiración que aprendo en el agua los aplico en los momentos de presión.</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-basketball-ball"></i>
+                    <h3>Basketball</h3>
+                    <p>Estrategia, lectura de jugadas y trabajo en equipo. Aceptar la derrota para crecer y celebrar los pases bien dados.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    FOOTER / CONTACTO (Aparece en todas las páginas)
+    ============================================================ -->
+    <footer style="padding: 2rem 0 3rem; border-top: 1px solid var(--border-color); margin-top: 2rem; background: var(--bg-body); transition: 0.6s;">
+        <div class="container" style="text-align:center;">
+            <div class="social-footer">
+                <a href="#" class="social-btn"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                <a href="#" class="social-btn"><i class="fab fa-telegram-plane"></i> Telegram</a>
+                <a href="#" class="social-btn"><i class="fab fa-tiktok"></i> TikTok</a>
+                <a href="#" class="social-btn"><i class="fab fa-facebook"></i> FB</a>
+                <a href="#" class="social-btn"><i class="fab fa-instagram"></i> IG</a>
+            </div>
+            <p style="color: var(--text-secondary); margin-top: 2rem; font-size: 0.9rem;">
+                Hecho con ❤️ y <i class="fas fa-code"></i> · Esta página tiene dos caras, como yo.
+            </p>
+        </div>
+    </footer>
+
+    <!-- ============================================================
+    SCRIPTS
+    ============================================================ -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        // ============================================================
+        // 1. NAVEGACIÓN SPA (Multi-página simulada)
+        // ============================================================
+        const navLinks = document.querySelectorAll('.nav-links a');
+        const pages = document.querySelectorAll('.page');
+
+        function showPage(pageId) {
+            pages.forEach(p => p.classList.remove('active'));
+            const target = document.getElementById('page-' + pageId);
+            if (target) target.classList.add('active');
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.page === pageId) {
+                    link.classList.add('active');
+                }
+            });
+            // Cerrar menú móvil si está abierto (opcional)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = link.dataset.page;
+                if (page) showPage(page);
+            });
+        });
+
+        // ============================================================
+        // 2. MODO LOCO / SOBRIO (El gran toggle)
+        // ============================================================
+        const toggleBtn = document.getElementById('themeToggle');
+        const body = document.body;
+
+        toggleBtn.addEventListener('click', () => {
+            if (body.classList.contains('theme-sober')) {
+                body.classList.remove('theme-sober');
+                body.classList.add('theme-loco');
+                toggleBtn.innerHTML = '🧊 Modo Sobrio';
+                // Iniciar partículas si no están corriendo
+                if (!window.particlesStarted) {
+                    initParticles();
+                    window.particlesStarted = true;
+                }
+            } else {
+                body.classList.remove('theme-loco');
+                body.classList.add('theme-sober');
+                toggleBtn.innerHTML = '🌪️ Modo Loco';
+                // Detener partículas (opcional, pero las dejamos quietas)
+                if (window.particleAnim) {
+                    cancelAnimationFrame(window.particleAnim);
+                    window.particleAnim = null;
+                }
+                const canvas = document.getElementById('particles-canvas');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        });
+
+        // ============================================================
+        // 3. SWIPER (Carrusel)
+        // ============================================================
+        const swiper = new Swiper('.mySwiper', {
+            loop: true,
+            autoplay: { delay: 3500, disableOnInteraction: true },
+            pagination: { el: '.swiper-pagination', clickable: true },
+            navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+            effect: 'slide',
+        });
+
+        // ============================================================
+        // 4. PARTÍCULAS (Solo para modo loco)
+        // ============================================================
+        let particlesArray = [];
+        let mouseX = undefined;
+        let mouseY = undefined;
+
+        function initParticles() {
+            const canvas = document.getElementById('particles-canvas');
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            // Ajustar tamaño al redimensionar
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            // Crear partículas
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.size = Math.random() * 3 + 1;
+                    this.speedX = (Math.random() - 0.5) * 2;
+                    this.speedY = (Math.random() - 0.5) * 2;
+                    this.color = `hsl(${Math.random() * 60 + 280}, 80%, 60%)`; // Tonos púrpura/rosa/cian
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+
+                    if (this.x > width || this.x < 0) this.speedX *= -1;
+                    if (this.y > height || this.y < 0) this.speedY *= -1;
+
+                    // Interacción con mouse
+                    if (mouseX !== undefined && mouseY !== undefined) {
+                        const dx = mouseX - this.x;
+                        const dy = mouseY - this.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 150) {
+                            const force = (150 - dist) / 150;
+                            this.x -= dx * force * 0.02;
+                            this.y -= dy * force * 0.02;
+                        }
+                    }
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.shadowColor = 'rgba(255,0,200,0.5)';
+                    ctx.shadowBlur = 10;
+                    ctx.fill();
+                }
+            }
+
+            // Inicializar partículas
+            const particleCount = Math.min(150, Math.floor(width * height / 8000));
+            for (let i = 0; i < particleCount; i++) {
+                particlesArray.push(new Particle());
+            }
+
+            // Animación
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                for (let p of particlesArray) {
+                    p.update();
+                    p.draw();
+                }
+                // Dibujar líneas entre partículas cercanas
+                for (let a = 0; a < particlesArray.length; a++) {
+                    for (let b = a + 1; b < particlesArray.length; b++) {
+                        const dx = particlesArray[a].x - particlesArray[b].x;
+                        const dy = particlesArray[a].y - particlesArray[b].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 120) {
+                            ctx.beginPath();
+                            ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                            ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                            ctx.strokeStyle = `rgba(200, 100, 255, ${0.1 * (1 - dist/120)})`;
+                            ctx.lineWidth = 0.8;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                window.particleAnim = requestAnimationFrame(animate);
+            }
+            animate();
+
+            // Capturar movimiento del mouse
+            window.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            window.addEventListener('mouseleave', () => {
+                mouseX = undefined;
+                mouseY = undefined;
+            });
+        }
+
+        // ============================================================
+        // 5. INTERACCIÓN OBJETOS FLOTANTES (Parallax loco)
+        // ============================================================
+        document.querySelectorAll('.float-item').forEach(item => {
+            item.addEventListener('mousemove', (e) => {
+                const rect = item.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                item.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px) scale(1.2) rotate(${x * 0.05}deg)`;
+            });
+            item.addEventListener('mouseleave', () => {
+                item.style.transform = 'translate(0,0) scale(1) rotate(0deg)';
+            });
+        });
+
+        // ============================================================
+        // 6. INICIO RÁPIDO (Si el usuario está en modo loco por defecto no, pero si recarga en loco, inicia partículas)
+        // ============================================================
+        if (body.classList.contains('theme-loco')) {
+            if (!window.particlesStarted) {
+                initParticles();
+                window.particlesStarted = true;
+            }
+            toggleBtn.innerHTML = '🧊 Modo Sobrio';
+        }
+
+        console.log('🚀 Página dual cargada. ¡Disfruta el viaje!');
+    </script>
+</body>
+</html>
