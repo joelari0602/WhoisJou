@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Universo Dual · Clever Joel Mamani Ari</title>
+    <title>Mi Universo Dual · Clever Joel</title>
     <!-- FUENTES Y LIBRERÍAS GLOBALES -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
@@ -28,22 +28,33 @@
     </div>
 
     <!-- ============================================
-    NAVEGACIÓN (Fija)
+    NAVEGACIÓN VERTICAL ÚNICA (PC + Móvil)
     ============================================ -->
-    <nav>
-        <div class="container">
-            <div class="logo">_Joel<span>Ari_</span> </div>
-            <ul class="nav-links">
-                <li><a class="active" data-page="inicio">Inicio</a></li>
-                <li><a data-page="profesion">Profesión</a></li>
-                <li><a data-page="fotografia">Fotografía</a></li>
-                <li><a data-page="musica">Música</a></li>
-                <li><a data-page="proyectos">Proyectos</a></li>
-                <li><a data-page="personal">Personal</a></li>
+
+    <!-- Botón flotante único: abre/cierra el sidebar en cualquier tamaño -->
+    <button id="sidebarToggleBtn" class="sidebar-toggle-btn" aria-label="Cerrar menú" aria-expanded="true">
+        <span class="toggle-box"><span class="toggle-inner"></span></span>
+    </button>
+
+    <!-- Overlay (solo se activa en móvil, con el sidebar abierto) -->
+    <div class="sidebar-overlay" id="sidebarOverlay" hidden></div>
+
+    <aside class="sidebar" id="sidebar" aria-hidden="false">
+        <div class="sidebar-logo">_Joel<span>Ari_</span></div>
+
+        <nav class="sidebar-nav">
+            <ul id="sidebarNavList">
+                <li><a class="active" data-page="inicio"><i class="fas fa-house"></i><span>Inicio</span></a></li>
+                <li><a data-page="profesion"><i class="fas fa-briefcase"></i><span>Profesión</span></a></li>
+                <li><a data-page="fotografia"><i class="fas fa-camera-retro"></i><span>Fotografía</span></a></li>
+                <li><a data-page="musica"><i class="fas fa-music"></i><span>Música</span></a></li>
+                <li><a data-page="proyectos"><i class="fas fa-diagram-project"></i><span>Proyectos</span></a></li>
+                <li><a data-page="personal"><i class="fas fa-user"></i><span>Personal</span></a></li>
             </ul>
-            <button class="theme-toggle" id="themeToggle">🌪️ Modo good</button>
-        </div>
-    </nav>
+        </nav>
+
+        <button class="theme-toggle" id="themeToggle">🌪️ NO</button>
+    </aside>
 
     <!-- ============================================
     CONTENEDOR PRINCIPAL (Aquí se inyectan las páginas)
@@ -55,7 +66,7 @@
     ============================================ -->
     <footer>
         <div class="container" style="text-align:center;">
-            <h3 class="footer-title">¡Conectemos! 🚀</h3>
+            <h3 class="footer-title">¡Holaaaa...! 🍀</h3>
             <p class="footer-subtitle">Haz clic en cualquiera de las redes para comunicarte o seguir mi trabajo:</p>
             <div class="social-footer">
                 <a href="https://wa.me/?text=Hola%20Joel,%20vi%20tu%20portafolio%20web" target="_blank" rel="noopener noreferrer" class="social-btn social-whatsapp" title="Escribirme por WhatsApp">
@@ -81,7 +92,7 @@
                 </a>
             </div>
             <p style="color: var(--text-secondary); margin-top: 2rem; font-size: 0.9rem;">
-                Hecho con ❤️ y <i class="fas fa-code"></i> por Clever Joel Mamani Ari.
+                Hecho con ❤️ y <i class="fas fa-code"></i> por Clever Joel.
             </p>
         </div>
     </footer>
