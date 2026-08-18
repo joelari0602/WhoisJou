@@ -421,7 +421,7 @@ body.theme-loco .sidebar-nav a.active::before {
   box-shadow: var(--shadow);
   border: 1px solid var(--border-color);
   transition: 0.6s;
-  aspect-ratio: 1/1.2;
+  aspect-ratio: 1;
   object-fit: cover;
   background: var(--bg-card);
 }
@@ -431,6 +431,79 @@ body.theme-loco .sidebar-nav a.active::before {
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+/* Foto de portada con dos caras: yo.png al frente y yo01.png al reverso. */
+.profile-coin {
+  display: block;
+  padding: 0;
+  cursor: pointer;
+  perspective: 1200px;
+  border-radius: 50%;
+  color: inherit;
+  font: inherit;
+  /* El contenedor no es parte de la moneda: de canto deja ver la página. */
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.profile-coin-inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.profile-coin.is-flipped .profile-coin-inner {
+  transform: rotateY(180deg);
+}
+
+.profile-coin-face {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  background: var(--bg-body);
+  box-shadow: var(--shadow);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.profile-coin-back {
+  transform: rotateY(180deg) translateZ(1px);
+}
+
+.profile-coin-front {
+  transform: translateZ(1px);
+}
+
+.profile-coin.is-manual .profile-coin-inner {
+  animation: none;
+  transition: none;
+}
+
+.profile-coin:focus-visible {
+  outline: 3px solid var(--accent-color);
+  outline-offset: 5px;
+}
+
+/* En modo loco, el brillo también gira con cada cara, no con el contenedor. */
+body.theme-loco .profile-coin {
+  border: 0;
+  animation: none;
+}
+
+body.theme-loco .profile-coin-face {
+  border: 2px solid #ff00c8;
+  animation: pulse-border 2s infinite alternate;
 }
 
 @media (max-width: 768px) {
@@ -448,6 +521,14 @@ body.theme-loco .sidebar-nav a.active::before {
     border-radius: 50%;
     aspect-ratio: 1;
     overflow: hidden;
+  }
+
+  .profile-coin-inner {
+    animation: profileCoinSpin 6s linear infinite;
+  }
+
+  .profile-coin {
+    touch-action: pan-y;
   }
 
   .hero-text {
@@ -473,6 +554,18 @@ body.theme-loco .sidebar-nav a.active::before {
     line-height: 1.5;
     padding-left: 1rem;
     margin-top: 1.5rem;
+  }
+}
+
+@keyframes profileCoinSpin {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-coin-inner {
+    animation: none;
+    transition-duration: 0.01ms;
   }
 }
 

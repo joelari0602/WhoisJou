@@ -119,6 +119,10 @@ async function loadPage(pageName) {
             initPhotoGallery();
         }
 
+        if (pageName === 'inicio') {
+            initProfileCoin();
+        }
+
         // Asegurar offset correcto tras renderizar la página
         try { updateMainOffset(); } catch (e) { /* silent */ }
 
@@ -138,6 +142,62 @@ async function loadPage(pageName) {
 
     }
 
+}
+
+// Giro manual de la foto de portada en escritorio.
+function initProfileCoin() {
+    const coin = app.querySelector('.profile-coin');
+    const inner = coin?.querySelector('.profile-coin-inner');
+
+    if (!coin || !inner) return;
+
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+    if (isMobile) {
+        let startX = 0;
+        let startRotation = 0;
+        let rotation = 0;
+        let dragging = false;
+
+        coin.addEventListener('pointerdown', event => {
+            if (event.pointerType === 'mouse') return;
+
+            coin.classList.add('is-manual');
+            startX = event.clientX;
+            startRotation = rotation;
+            dragging = true;
+            coin.setPointerCapture(event.pointerId);
+        });
+
+        coin.addEventListener('pointermove', event => {
+            if (!dragging) return;
+
+            const distance = event.clientX - startX;
+
+            if (Math.abs(distance) > 4) event.preventDefault();
+
+            rotation = startRotation + distance * 0.75;
+            inner.style.transform = `rotateY(${rotation}deg)`;
+        });
+
+        const stopDragging = event => {
+            if (!dragging) return;
+            dragging = false;
+
+            if (coin.hasPointerCapture(event.pointerId)) {
+                coin.releasePointerCapture(event.pointerId);
+            }
+        };
+
+        coin.addEventListener('pointerup', stopDragging);
+        coin.addEventListener('pointercancel', stopDragging);
+        return;
+    }
+
+    coin.addEventListener('click', () => {
+        const isFlipped = coin.classList.toggle('is-flipped');
+        coin.setAttribute('aria-pressed', String(isFlipped));
+    });
 }
 
 // Ajuste dinámico de padding-top usando la altura real del nav para la página fotografia
