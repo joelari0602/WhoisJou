@@ -158,13 +158,80 @@ function initProfileCoin() {
         let startRotation = 0;
         let rotation = 0;
         let dragging = false;
+        let lastX = 0;
+        let lastTime = 0;
+        let velocity = 0;
+        let inertiaFrame = null;
+        const automaticRotationDuration = 12;
+
+        const renderRotation = () => {
+            inner.style.transform = `rotateY(${rotation}deg)`;
+        };
+
+        const getVisibleRotation = () => {
+            const transform = window.getComputedStyle(inner).transform;
+
+            if (!transform.startsWith('matrix3d(')) return 0;
+
+            const values = transform
+                .slice(9, -1)
+                .split(',')
+                .map(Number);
+
+            return Math.atan2(-values[2], values[0]) * (180 / Math.PI);
+        };
+
+        const stopInertia = () => {
+            if (inertiaFrame) {
+                cancelAnimationFrame(inertiaFrame);
+                inertiaFrame = null;
+            }
+        };
+
+        const resumeAutomaticRotation = () => {
+            // Sincroniza la fase de la animación con la posición donde terminó el gesto.
+            const normalizedRotation = ((rotation % 360) + 360) % 360;
+            inner.style.animationDelay =
+                `-${(normalizedRotation / 360) * automaticRotationDuration}s`;
+            inner.style.transform = '';
+            coin.classList.remove('is-manual');
+        };
+
+        const startInertia = () => {
+            let previousTime = performance.now();
+
+            const animate = now => {
+                const elapsed = now - previousTime;
+                previousTime = now;
+
+                rotation += velocity * elapsed;
+                // Fricción progresiva: conserva la sensación de impulso y frena suavemente.
+                velocity *= Math.pow(0.92, elapsed / 16.67);
+                renderRotation();
+
+                if (Math.abs(velocity) > 0.003) {
+                    inertiaFrame = requestAnimationFrame(animate);
+                } else {
+                    inertiaFrame = null;
+                    resumeAutomaticRotation();
+                }
+            };
+
+            inertiaFrame = requestAnimationFrame(animate);
+        };
 
         coin.addEventListener('pointerdown', event => {
             if (event.pointerType === 'mouse') return;
 
+            stopInertia();
+            rotation = getVisibleRotation();
             coin.classList.add('is-manual');
+            renderRotation();
             startX = event.clientX;
             startRotation = rotation;
+            lastX = event.clientX;
+            lastTime = event.timeStamp;
+            velocity = 0;
             dragging = true;
             coin.setPointerCapture(event.pointerId);
         });
@@ -177,7 +244,14 @@ function initProfileCoin() {
             if (Math.abs(distance) > 4) event.preventDefault();
 
             rotation = startRotation + distance * 0.75;
-            inner.style.transform = `rotateY(${rotation}deg)`;
+            const elapsed = Math.max(event.timeStamp - lastTime, 1);
+            const instantVelocity = ((event.clientX - lastX) * 0.75) / elapsed;
+
+            // Suaviza pequeñas variaciones del sensor táctil antes de aplicar la inercia.
+            velocity = velocity * 0.7 + instantVelocity * 0.3;
+            lastX = event.clientX;
+            lastTime = event.timeStamp;
+            renderRotation();
         });
 
         const stopDragging = event => {
@@ -186,6 +260,16 @@ function initProfileCoin() {
 
             if (coin.hasPointerCapture(event.pointerId)) {
                 coin.releasePointerCapture(event.pointerId);
+            }
+
+            if (event.type === 'pointerup') {
+                if (Math.abs(velocity) > 0.003) {
+                    startInertia();
+                } else {
+                    resumeAutomaticRotation();
+                }
+            } else {
+                resumeAutomaticRotation();
             }
         };
 

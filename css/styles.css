@@ -524,7 +524,7 @@ body.theme-loco .profile-coin-face {
   }
 
   .profile-coin-inner {
-    animation: profileCoinSpin 6s linear infinite;
+    animation: profileCoinSpin 12s linear infinite;
   }
 
   .profile-coin {
