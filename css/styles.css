@@ -477,6 +477,12 @@ body.theme-loco .sidebar-nav a.active::before {
   -webkit-backface-visibility: hidden;
 }
 
+.profile-coin-face picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .profile-coin-back {
   transform: rotateY(180deg) translateZ(1px);
 }
@@ -622,6 +628,42 @@ body.theme-loco .profile-coin-face {
 .badge:hover {
   border-color: var(--accent-color);
   color: var(--text-primary);
+}
+
+.badge-link {
+  cursor: pointer;
+  animation: badgeFloat 3.8s ease-in-out infinite;
+  will-change: transform;
+}
+
+.badge-link:nth-child(2n) {
+  animation-delay: -1.25s;
+}
+
+.badge-link:nth-child(3n) {
+  animation-delay: -2.35s;
+}
+
+.badge-link:hover {
+  animation-play-state: paused;
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 6px 16px rgba(44, 76, 59, 0.14);
+}
+
+.badge-link:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 3px;
+}
+
+@keyframes badgeFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge-link {
+    animation: none;
+  }
 }
 
 .section-title {
@@ -906,7 +948,8 @@ body.theme-loco .swiper {
   box-shadow: 0 0 50px rgba(0, 240, 255, 0.2);
 }
 
-body.theme-loco .hero-img {
+/* El brillo de imágenes normales no debe crear un marco fijo alrededor de la moneda. */
+body.theme-loco .hero-img:not(.profile-coin) {
   border: 2px solid #ff00c8;
   animation: pulse-border 2s infinite alternate;
 }

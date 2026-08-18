@@ -2,10 +2,16 @@
     <button class="hero-img profile-coin" type="button" aria-label="Girar mi foto" aria-pressed="false">
         <span class="profile-coin-inner">
             <span class="profile-coin-face profile-coin-front">
-                <img src="img/yo.png" alt="Retrato de Joel Ari">
+                <picture>
+                    <source srcset="img/yo.webp" type="image/webp">
+                    <img src="img/yo.png" alt="Retrato de Joel Ari">
+                </picture>
             </span>
             <span class="profile-coin-face profile-coin-back">
-                <img src="img/yo01.png" alt="Retrato alternativo de Joel Ari">
+                <picture>
+                    <source srcset="img/yo01.webp" type="image/webp">
+                    <img src="img/yo01.png" alt="Retrato alternativo de Joel Ari">
+                </picture>
             </span>
         </span>
     </button>
@@ -13,18 +19,18 @@
         <h1>Hola, soy <span class="highlight"> <br> Joel Ari</span></h1>
         <p class="sub">Ingeniero Estadístico e Informático, Fotógrafo, Cantante...</p>
         <div class="badge-container">
-            <span class="badge"><i class="fas fa-chart-line"></i> Data Science</span>
-            <span class="badge"><i class="fas fa-code"></i> Web Apps</span>
-            <span class="badge"><i class="fas fa-camera"></i> Fotografía</span>
-            <span class="badge"><i class="fas fa-guitar"></i> Guitarra</span>
-            <span class="badge"><i class="fas fa-microphone"></i> canto</span>
-            <span class="badge"><i class="fas fa-basketball"></i> Básquet</span>
-            <span class="badge"><i class="fas fa-volleyball"></i> Voley</span>
-            <span class="badge"><i class="fas fa-swimmer"></i> Natación</span>
+            <a class="badge badge-link" href="#profesion" data-page="profesion"><i class="fas fa-chart-line"></i> Data Science</a>
+            <a class="badge badge-link" href="#profesion" data-page="profesion"><i class="fas fa-code"></i> Web Apps</a>
+            <a class="badge badge-link" href="#fotografia" data-page="fotografia"><i class="fas fa-camera"></i> Fotografía</a>
+            <a class="badge badge-link" href="#musica" data-page="musica"><i class="fas fa-guitar"></i> Guitarra</a>
+            <a class="badge badge-link" href="#musica" data-page="musica"><i class="fas fa-microphone"></i> canto</a>
+            <a class="badge badge-link" href="#personal" data-page="personal"><i class="fas fa-basketball"></i> Básquet</a>
+            <a class="badge badge-link" href="#personal" data-page="personal"><i class="fas fa-volleyball"></i> Voley</a>
+            <a class="badge badge-link" href="#personal" data-page="personal"><i class="fas fa-swimmer"></i> Natación</a>
         </div>
         
         <div class="quote">
-            “Tengo la mente alegre y divertida de dioscuros, pero mi corazón se rige por la ley inquebrantable de la lealtad mutua.”
+            “Poseo el ánimo jubiloso y jocundo de los Dioscuros, empero mis íntimos sentimientos están regidos por el estatuto inconmovible de la fidelidad recíproca.”
         </div>
     </div>
 </div>

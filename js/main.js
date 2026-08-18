@@ -9,16 +9,14 @@
 // ============================================================
 
 const app = document.getElementById('app');
-const navLinks = document.querySelectorAll('.nav-links a');
 const themeButton = document.getElementById('themeToggle');
 const body = document.body;
-const navEl = document.querySelector('nav');
 let currentPage = null;
 const sidebar = document.getElementById('sidebar');
 const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
 const sidebarOverlay = document.getElementById('sidebarOverlay');
-const themeButtonMobile = document.getElementById('themeToggleMobile');
 const footerEl = document.querySelector('footer');
+const pageCache = new Map();
 
 // links inside sidebar
 let sidebarNavLinks = sidebar ? sidebar.querySelectorAll('.sidebar-nav a') : [];
@@ -39,16 +37,7 @@ async function loadPage(pageName) {
         // Actualizar menú
         // --------------------------------------------------------
 
-        navLinks.forEach(link => {
-            link.classList.toggle(
-                'active',
-                link.dataset.page === pageName
-            );
-        });
-        // Sincronizar estado activo con los links clonados
-        const mobileLinksNow = document.querySelectorAll('.mobile-nav a');
-            const sidebarLinksNow = document.querySelectorAll('.sidebar-nav a');
-        mobileLinksNow.forEach(link => link.classList.toggle('active', link.dataset.page === pageName));
+        const sidebarLinksNow = document.querySelectorAll('.sidebar-nav a');
         sidebarLinksNow.forEach(link => link.classList.toggle('active', link.dataset.page === pageName));
 
 
@@ -56,17 +45,21 @@ async function loadPage(pageName) {
         // Cargar HTML
         // --------------------------------------------------------
 
-        const response = await fetch(
-            `pages/${pageName}.html`
-        );
+        let html = pageCache.get(pageName);
 
-        if (!response.ok) {
-            throw new Error(
-                `No se pudo cargar la página: ${pageName}`
-            );
+        if (!html) {
+            const response = await fetch(`pages/${pageName}.html`);
+
+            if (!response.ok) {
+                throw new Error(`No se pudo cargar la página: ${pageName}`);
+            }
+
+            html = await response.text();
+            pageCache.set(pageName, html);
         }
 
-        const html = await response.text();
+        // Evita que una carga anterior reemplace la página elegida más recientemente.
+        if (currentPage !== pageName) return;
 
         app.innerHTML = html;
 
@@ -84,17 +77,12 @@ async function loadPage(pageName) {
 
         // Ajustar padding superior para que el título 'fotografia' empiece justo debajo del nav
         requestAnimationFrame(() => {
-            setAppPaddingForPage(pageName);
-            // adicional: forzar cero padding/margin en la cabecera de fotografia
             if (pageName === 'fotografia') {
-                try {
-                    app.style.paddingTop = '0px';
-                    document.documentElement.style.scrollPaddingTop = '0px';
-                    const header = app.querySelector('.fotografia-header');
-                    if (header) { header.style.marginTop = '0px'; header.style.paddingTop = '0px'; }
-                    const title = app.querySelector('.section-title');
-                    if (title) title.style.marginTop = '0px';
-                } catch (e) { /* silent */ }
+                app.style.paddingTop = '0px';
+                document.documentElement.style.scrollPaddingTop = '0px';
+            } else {
+                app.style.removeProperty('padding-top');
+                document.documentElement.style.removeProperty('scroll-padding-top');
             }
         });
 
@@ -121,6 +109,7 @@ async function loadPage(pageName) {
 
         if (pageName === 'inicio') {
             initProfileCoin();
+            initHomeBadgeLinks();
         }
 
         // Asegurar offset correcto tras renderizar la página
@@ -142,6 +131,23 @@ async function loadPage(pageName) {
 
     }
 
+}
+
+// Accesos rápidos de la portada: conservan la navegación SPA del menú lateral.
+function initHomeBadgeLinks() {
+    app.querySelectorAll('.badge-link').forEach(link => {
+        link.addEventListener('click', event => {
+            event.preventDefault();
+
+            const page = link.dataset.page;
+            if (!page) return;
+
+            history.pushState({ page }, '', `#${page}`);
+            loadPage(page);
+
+            if (window.innerWidth <= 992) closeSidebar();
+        });
+    });
 }
 
 // Giro manual de la foto de portada en escritorio.
@@ -284,20 +290,6 @@ function initProfileCoin() {
     });
 }
 
-// Ajuste dinámico de padding-top usando la altura real del nav para la página fotografia
-function setAppPaddingForPage(pageName) {
-    if (!app) return;
-    const navHeight = navEl ? navEl.offsetHeight : 0;
-
-    if (pageName === 'fotografia') {
-        app.style.paddingTop = navHeight + 'px';
-        document.documentElement.style.scrollPaddingTop = navHeight + 'px';
-    } else {
-        app.style.paddingTop = '';
-        document.documentElement.style.scrollPaddingTop = '';
-    }
-}
-
 // Ajustar padding y offset al cambiar tamaño
 function updateMainOffset(extraPx = 8) {
     // Use CSS variables so transitions are handled by CSS rather than inline styles.
@@ -330,7 +322,6 @@ function updateMainOffset(extraPx = 8) {
 }
 
 window.addEventListener('resize', () => {
-    if (currentPage === 'fotografia') setAppPaddingForPage(currentPage);
     updateMainOffset();
 });
 
@@ -339,29 +330,6 @@ window.addEventListener('resize', () => {
 // EVENTOS DE NAVEGACIÓN
 // ============================================================
 
-navLinks.forEach(link => {
-
-    link.addEventListener('click', event => {
-
-        event.preventDefault();
-
-        const page = link.dataset.page;
-
-        if (!page) return;
-
-        history.pushState(
-            { page },
-            '',
-            `#${page}`
-        );
-
-        loadPage(page);
-            // cerrar sidebar en móviles al navegar
-            if (window.innerWidth <= 992) closeSidebar();
-
-    });
-
-});
     // --- Sidebar unified behavior ---
 
     // Re-bind sidebar links to SPA navigation
@@ -425,14 +393,6 @@ navLinks.forEach(link => {
     }
 
     if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
-
-    // Enlazar botón de tema dentro del sidebar (si existe)
-    if (themeButtonMobile) {
-        themeButtonMobile.addEventListener('click', () => {
-            if (body.classList.contains('theme-sober')) enableCrazyMode(); else enableSoberMode();
-        });
-    }
-
 
 // ============================================================
 // BOTONES ATRÁS / ADELANTE DEL NAVEGADOR
@@ -889,6 +849,15 @@ function stopParticles() {
 
 }
 
+// Evita trabajo de canvas cuando la pestaña no está visible.
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        stopParticles();
+    } else if (body.classList.contains('theme-loco')) {
+        initParticles();
+    }
+});
+
 
 // ============================================================
 // 5. OBJETOS FLOTANTES
@@ -1032,8 +1001,8 @@ function initPhotoGallery() {
             { length: 30 },
             (_, index) => {
 
-                const filename =
-                    `foto_${String(index + 1).padStart(3, '0')}.jpg`;
+                const imageName =
+                    `foto_${String(index + 1).padStart(3, '0')}`;
 
                 let category = 'Otros';
 
@@ -1043,7 +1012,8 @@ function initPhotoGallery() {
                 else if (index < 28) category = 'Animalista';
 
                 return {
-                    filename,
+                    filename: `${imageName}.webp`,
+                    fallbackFilename: `${imageName}.jpg`,
                     category,
                     title: `${category} · Serie ${index + 1}`,
                     story: 'Una mirada personal que combina composición, luz y emoción para contar una historia visual propia.'
@@ -1102,6 +1072,12 @@ function initPhotoGallery() {
         // tarjeta como "sin imagen" y mostramos un placeholder con
         // ícono, ver estilos .featured-card.no-image en styles.css
         image.addEventListener('error', () => {
+            if (photo.fallbackFilename && !image.dataset.usedFallback) {
+                image.dataset.usedFallback = 'true';
+                image.src = photoPath + photo.fallbackFilename;
+                return;
+            }
+
             card.classList.add('no-image');
             image.remove();
         }, { once: true });
@@ -1173,6 +1149,12 @@ function initPhotoGallery() {
         // BUG CORREGIDO: mismo caso que en createFeaturedCard, evita
         // el icono de imagen rota cuando el archivo aún no existe.
         image.addEventListener('error', () => {
+            if (photo.fallbackFilename && !image.dataset.usedFallback) {
+                image.dataset.usedFallback = 'true';
+                image.src = photoPath + photo.fallbackFilename;
+                return;
+            }
+
             front.classList.add('no-image');
             image.remove();
         }, { once: true });
@@ -1236,14 +1218,4 @@ function initPhotoGallery() {
     createFilterButtons();
     renderFeatured();
     renderGallery();
-
 }
-
-
-// ============================================================
-// FIN DEL MAIN.JS
-// ============================================================
-
-console.log(
-    '✓ Portafolio cargado correctamente'
-);
